@@ -11,7 +11,7 @@ else:
 address = (SERVER_IP, SERVER_PORT)
 print(f'Server is: {address}')
 
-c_socket = socket.scket(socket.AF_INET, socket.SOCK_DGRAM)
+c_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 print(f'[*] UDP Client is creating socket for server {address}')
 
 while True:
