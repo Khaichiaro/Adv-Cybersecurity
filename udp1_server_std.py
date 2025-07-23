@@ -1,7 +1,8 @@
+import math
 import sys
 import socket
 
-SERVER_IP = '0.0.0.0'
+SERVER_IP = '127.0.0.1'
 SERVER_PORT = 1111
 address = (SERVER_IP, SERVER_PORT)
 
@@ -16,9 +17,16 @@ while True:
         print(f'QUIT!!!')
         break
     msg = msg.decode('utf-8')
-    print(f'[<<<] Receiving message: {msg} from {address}')
-    msg = msg.upper()
-    s_socket.sendto(msg.encode(), c_addr)
-    print(f'[>>>] sending message: {msg} to {address}')
+    print(f'[<<<] Receiving message: {msg} from {c_addr}')
+    
+    client_port = c_addr[1]
+    vowels = "aeiouAEIOU"
+    vowel_count = sum(1 for char in msg if char in vowels)
+    b_number = math.ceil(client_port * 0.03356 - 918.41)
+    m_number = b_number + vowel_count
+    res = str(m_number)
+
+    s_socket.sendto(res.encode(), c_addr)
+    print(f'[>>>] Sending YOUR MAIC NUMBER is: {res} to {c_addr}')
     
 s_socket.close()
