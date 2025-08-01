@@ -5,7 +5,7 @@ SERVER_IP = '127.0.0.1'
 SERVER_PORT = 2222
 fam_name = socket.AF_INET
 
-if len(sys.argv) >21:
+if len(sys.argv) >2:
     if (sys.argv[1].lower() == 'ipv6') and socket.has_ipv6:
         fam_name = socket.AF_INET6
         SERVER_IP = '::'
