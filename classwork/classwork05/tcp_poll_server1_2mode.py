@@ -19,6 +19,7 @@ print(f'[***] Listening for client (max: 10) at {s1.getsockname()}')
 
 socks_dict = {s1.fileno(): s1}
 addr_dict = {}
+mode_dict = {}
 
 poller = select.poll()
 poller.register(s1, READ_ONLY)
@@ -39,16 +40,30 @@ while True:
                 poller.register(s_client, READ_ONLY)
                 socks_dict[s_client.fileno()] = s_client
                 addr_dict[s_client] = address
+                mode_dict[s_client] = "normal"
             else:
                 msg = sock.recv(2048)
                 if msg:
-                    print(f'[<<] Receiving message: {msg} from {addr_dict[sock]}')
-                    if msg.enswith('?'):
-                        poller.modify(sock, READ_WRITE)
+                    text = msg.decode().strip()
+                    print(f'[<<] Receiving message: "{text}" from {addr_dict[sock]} (mode={mode_dict[sock]})')
+                    if text.lower() == 'v':
+                        mode_dict[sock] = "viewer"
+                        sock.sendall(b"*** You are now in Viewer Mode ***")
+                        print(f'[!!] Client {addr_dict[sock]} switched to Viewer Mode')
                     else:
-                        msg = msg.upper()
-                        sock.sendall(msg.encode())
-                        print(f'[>>] Sending messagge: {msg} to {addr_dict[sock]}')
+                        if mode_dict[sock] == "normal":
+                            m = text.upper()
+                            sock.sendall(m.encode())
+                            print(f'[>>] Sending messagge: {m} to {addr_dict[sock]}')
+                            # ส่งข้อความนี้ไปให้ทุก viewer พร้อมแสดง address ของ client ที่ส่ง
+                            for cli, mode in mode_dict.items():
+                                if mode == "viewer" and cli != sock:
+                                    try:
+                                        cli.sendall(f"[Viewer Mode] Receiving message:  {m} from {addr_dict[sock]}".encode())
+                                    except:
+                                        pass
+                        else:
+                            sock.sendall(b"[Viewer Mode] You cannot send messages.")
                 else:
                     print('###############################')
                     print(f'Client {addr_dict[sock]} closed socket normally')
