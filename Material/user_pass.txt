@@ -1,0 +1,10 @@
+admin
+password
+root
+tech
+msfadmin
+service
+user
+postgres
+smcadmin
+Symbol
